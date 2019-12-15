@@ -22,7 +22,6 @@ namespace Monzo.Crawler.Business
 		{
 			if (!Uri.TryCreate(website, UriKind.Absolute, out Uri websiteUri))
 			{
-				// TODO: Better exception
 				throw new ArgumentException(nameof(website));
 			}
 
@@ -53,13 +52,12 @@ namespace Monzo.Crawler.Business
 				LinkedAddresses = links
 			};
 
-			// TODO: If this does not happen successfully... then something's gone wrong
 			_sitemap.TryUpdate(
 				key: uri.AbsoluteUri,
 				newValue: page,
 				comparisonValue: null);
 
-			await Task.WhenAll(links.Select(link => TryCrawl(link)));
+			await Task.WhenAll(links?.Select(link => TryCrawl(link)) ?? new Task[0]);
 		}
 	}
 }
