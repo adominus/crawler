@@ -18,7 +18,7 @@ namespace Monzo.Crawler.Business
 			_linkCrawler = linkCrawler;
 		}
 
-		public async Task<IEnumerable<Page>> Generate(string website)
+		public async Task<IEnumerable<Page>> GenerateAsync(string website)
 		{
 			if (!Uri.TryCreate(website, UriKind.Absolute, out Uri websiteUri))
 			{

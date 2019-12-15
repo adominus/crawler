@@ -42,10 +42,10 @@ namespace Monzo.Crawler.Business.Tests
 		}
 
 		[Test]
-		public void Generate_WhenWebsiteUriIsNotValid_ShouldThrowException()
+		public void WhenWebsiteUriIsNotValid_ShouldThrowException()
 		{
 			// Arrange, Act
-			AsyncTestDelegate act = () => _subject.Generate(_fixture.Create<string>());
+			AsyncTestDelegate act = () => _subject.GenerateAsync(_fixture.Create<string>());
 
 			// Assert 
 			Assert.That(act, Throws.TypeOf<ArgumentException>());
@@ -55,7 +55,7 @@ namespace Monzo.Crawler.Business.Tests
 		public async Task ShouldFindLinksOnSameDomain()
 		{
 			// Arrange, Act
-			await _subject.Generate(_website);
+			await _subject.GenerateAsync(_website);
 
 			// Assert 
 			_linkCrawlerMock.Verify(x => x.FindLinksOnSameDomain(
@@ -66,7 +66,7 @@ namespace Monzo.Crawler.Business.Tests
 		public async Task WhenNoLinksReturned_ShouldReturnSingleVisitedPage()
 		{
 			// Arrange, Act
-			var result = await _subject.Generate(_website);
+			var result = await _subject.GenerateAsync(_website);
 
 			// Assert 
 			Assert.That(result.Count(), Is.EqualTo(1));
@@ -76,7 +76,7 @@ namespace Monzo.Crawler.Business.Tests
 		public async Task WhenNoLinksReturned_ShouldReturnPageMatchingOriginalHost()
 		{
 			// Arrange, Act
-			var result = await _subject.Generate(_website);
+			var result = await _subject.GenerateAsync(_website);
 
 			// Assert 
 			Assert.That(result.Single().Address.AbsoluteUri, Is.EqualTo(_website));
@@ -90,7 +90,7 @@ namespace Monzo.Crawler.Business.Tests
 				.ReturnsAsync((IEnumerable<Uri>)null);
 
 			// Act
-			var result = await _subject.Generate(_website);
+			var result = await _subject.GenerateAsync(_website);
 
 			// Assert 
 			Assert.That(result.Count(), Is.EqualTo(1));
@@ -106,7 +106,7 @@ namespace Monzo.Crawler.Business.Tests
 				.ReturnsAsync(new[] { expectedVisitedLink });
 
 			// Act
-			await _subject.Generate(_website);
+			await _subject.GenerateAsync(_website);
 
 			// Assert
 			_linkCrawlerMock.Verify(x => x.FindLinksOnSameDomain(
@@ -121,7 +121,7 @@ namespace Monzo.Crawler.Business.Tests
 				.ReturnsAsync(new[] { _fixture.Create<Uri>() });
 
 			// Act
-			var results = await _subject.Generate(_website);
+			var results = await _subject.GenerateAsync(_website);
 
 			// Assert
 			Assert.That(results.Count(), Is.EqualTo(2));
@@ -137,7 +137,7 @@ namespace Monzo.Crawler.Business.Tests
 				.ReturnsAsync(new[] { expectedLink });
 
 			// Act
-			var results = await _subject.Generate(_website);
+			var results = await _subject.GenerateAsync(_website);
 
 			// Assert
 			var basePage = results.Single(x => x.Address.AbsoluteUri == _website);
@@ -155,7 +155,7 @@ namespace Monzo.Crawler.Business.Tests
 				.ReturnsAsync(new[] { expectedLink });
 
 			// Act
-			var results = await _subject.Generate(_website);
+			var results = await _subject.GenerateAsync(_website);
 
 			// Assert
 			var expectedPage = results.SingleOrDefault(x => x.Address == expectedLink);
@@ -176,7 +176,7 @@ namespace Monzo.Crawler.Business.Tests
 				.ReturnsAsync(new[] { new Uri(_website) });
 
 			// Act
-			var results = await _subject.Generate(_website);
+			var results = await _subject.GenerateAsync(_website);
 
 			// Assert
 			Assert.That(results.Count(), Is.EqualTo(2));
@@ -198,7 +198,7 @@ namespace Monzo.Crawler.Business.Tests
 				.ReturnsAsync(new[] { new Uri(_website) });
 
 			// Act
-			var results = await _subject.Generate(_website);
+			var results = await _subject.GenerateAsync(_website);
 
 			// Assert
 			var basePage = results.Single(x => x.Address.AbsoluteUri == _website);
@@ -223,7 +223,7 @@ namespace Monzo.Crawler.Business.Tests
 				.ReturnsAsync(new[] { sharedAddress });
 
 			// Act
-			await _subject.Generate(_website);
+			await _subject.GenerateAsync(_website);
 
 			// Assert
 			_linkCrawlerMock.Verify(x => x.FindLinksOnSameDomain(sharedAddress));
@@ -244,7 +244,7 @@ namespace Monzo.Crawler.Business.Tests
 				.ReturnsAsync(new[] { sharedAddress });
 
 			// Act
-			var results = await _subject.Generate(_website);
+			var results = await _subject.GenerateAsync(_website);
 
 			// Assert
 			var linkedPageA = results.Single(x => x.Address == addressA);

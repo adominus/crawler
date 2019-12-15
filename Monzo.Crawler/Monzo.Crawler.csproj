@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Monzo.Crawler.Business\Monzo.Crawler.Business.csproj" />
     <ProjectReference Include="..\Monzo.Crawler.Domain\Monzo.Crawler.Domain.csproj" />
   </ItemGroup>
 

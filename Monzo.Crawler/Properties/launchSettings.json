@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Monzo.Crawler": {
+      "commandName": "Project",
+      "commandLineArgs": "--website bbc.co.uk"
+    }
+  }
+}

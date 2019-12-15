@@ -5,6 +5,6 @@ namespace Monzo.Crawler.Domain
 {
 	public interface ISitemapGenerator
 	{
-		Task<IEnumerable<Page>> Generate(string website);
+		Task<IEnumerable<Page>> GenerateAsync(string website);
 	}
 }

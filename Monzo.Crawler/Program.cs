@@ -1,6 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Monzo.Crawler.Business;
+using Monzo.Crawler.Domain;
 using System;
 using System.Net.Http;
 using System.Text;
@@ -13,115 +16,106 @@ namespace Monzo.Crawler
     {
         static async Task Main(string[] args)
         {
-            await Task.FromResult(1);
-            Console.WriteLine("Hello World!");
+            var host = Host.CreateDefaultBuilder(args)
+                .ConfigureServices(ConfigureServices)
+                .UseConsoleLifetime()
+                .Build();
 
-            // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/?view=aspnetcore-3.1
+            using var serviceScope = host.Services.CreateScope();
 
+            var services = serviceScope.ServiceProvider;
 
-            var builder = Host.CreateDefaultBuilder(args)
-                .ConfigureServices((_, services) =>
-                {
-                    services.AddTransient<ITestService, TestService>();
+            var crawlerService = services.GetRequiredService<CrawlerService>();
 
-                    services.AddTransient<LoggingDelegatingHandler>();
+            await crawlerService.ExecuteAsync();
+        }
 
-                    services.AddHttpClient<ITestService, TestService>(client =>
-                    {
-                        client.BaseAddress = new Uri("https://www.bbc.co.uk/");
-                    })
-                    .AddHttpMessageHandler<LoggingDelegatingHandler>();
-                })
-                .UseConsoleLifetime();
+        private static void ConfigureServices(HostBuilderContext hostBuilder, IServiceCollection services)
+        {
+            services.Configure<CrawlerOptions>(hostBuilder.Configuration);
+            services.AddTransient<CrawlerService>();
 
-            var host = builder.Build();
+            services.AddScoped<ISitemapGenerator, SitemapGenerator>();
 
-            using (var serviceScope = host.Services.CreateScope())
-            {
-                var services = serviceScope.ServiceProvider;
+            services.AddScoped<ILinkCrawler, LinkCrawler>();
 
-                try
-                {
-                    var myService = services.GetRequiredService<ITestService>();
-                    var result = await myService.TestMethod();
+            //services.AddTransient<ITestService, TestService>();
 
-                    //Console.WriteLine(result);
-                }
-                catch (Exception ex)
-                {
-                    var logger = services.GetRequiredService<ILogger<Program>>();
+            //services.AddTransient<LoggingDelegatingHandler>();
 
-                    logger.LogError(ex, "An error occurred.");
-                }
-            }
+            //services.AddHttpClient<ITestService, TestService>(client =>
+            //{
+            //    client.BaseAddress = new Uri("https://www.bbc.co.uk/");
+            //})
+            //.AddHttpMessageHandler<LoggingDelegatingHandler>();
         }
     }
 
-    public interface IPrinter
-    {
-        void PrintLine(string s);
-    }
+    //public interface IPrinter
+    //{
+    //    void PrintLine(string s);
+    //}
 
-    public class ConsolePrinter : IPrinter
-    {
-        public void PrintLine(string s)
-        {
-            Console.WriteLine(s);
-        }
-    }
+    //public class ConsolePrinter : IPrinter
+    //{
+    //    public void PrintLine(string s)
+    //    {
+    //        Console.WriteLine(s);
+    //    }
+    //}
 
-    public class StringPrinter : IPrinter
-    {
-        private StringBuilder _stringBuilder;
+    //public class StringPrinter : IPrinter
+    //{
+    //    private StringBuilder _stringBuilder;
 
-        public StringPrinter()
-        {
-            _stringBuilder = new StringBuilder();
-        }
+    //    public StringPrinter()
+    //    {
+    //        _stringBuilder = new StringBuilder();
+    //    }
 
-        public void PrintLine(string s)
-        {
-            _stringBuilder.Append(s);
-        }
-    }
+    //    public void PrintLine(string s)
+    //    {
+    //        _stringBuilder.Append(s);
+    //    }
+    //}
 
-    public class LoggingDelegatingHandler : DelegatingHandler
-    {
-        private readonly ILogger<LoggingDelegatingHandler> logger;
+    //public class LoggingDelegatingHandler : DelegatingHandler
+    //{
+    //    private readonly ILogger<LoggingDelegatingHandler> logger;
 
-        public LoggingDelegatingHandler(ILogger<LoggingDelegatingHandler> logger)
-            : base()
-        {
-            this.logger = logger;
-        }
+    //    public LoggingDelegatingHandler(ILogger<LoggingDelegatingHandler> logger)
+    //        : base()
+    //    {
+    //        this.logger = logger;
+    //    }
 
-        protected override Task<HttpResponseMessage> SendAsync(
-            HttpRequestMessage request,
-            CancellationToken cancellationToken)
-        {
-            logger.LogError("Inside the logging delegating handler!");
+    //    protected override Task<HttpResponseMessage> SendAsync(
+    //        HttpRequestMessage request,
+    //        CancellationToken cancellationToken)
+    //    {
+    //        logger.LogError("Inside the logging delegating handler!");
 
-            return base.SendAsync(request, cancellationToken);
-        }
-    }
+    //        return base.SendAsync(request, cancellationToken);
+    //    }
+    //}
 
-    public class TestService : ITestService
-    {
-        private readonly HttpClient httpClient;
+    //public class TestService : ITestService
+    //{
+    //    private readonly HttpClient httpClient;
 
-        public TestService(HttpClient httpClient)
-        {
-            this.httpClient = httpClient;
-        }
+    //    public TestService(HttpClient httpClient, IOptions<CrawlerOptions> options)
+    //    {
+    //        this.httpClient = httpClient;
+    //    }
 
-        public Task<string> TestMethod()
-        {
-            return httpClient.GetStringAsync("");
-        }
-    }
+    //    public Task<string> TestMethod()
+    //    {
+    //        return httpClient.GetStringAsync("");
+    //    }
+    //}
 
-    public interface ITestService
-    {
-        Task<string> TestMethod();
-    }
+    //public interface ITestService
+    //{
+    //    Task<string> TestMethod();
+    //}
 }
