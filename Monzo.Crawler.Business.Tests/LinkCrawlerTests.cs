@@ -116,6 +116,22 @@ namespace Monzo.Crawler.Business.Tests
 		}
 
 		[Test]
+		[TestCase("http://localhost/foo/", "http://localhost/foo")]
+		[TestCase("http://localhost/foo/bar/", "http://localhost/foo/bar")]
+		[TestCase("foo/bar/", "http://localhost/foo/bar")]
+		public async Task ShouldRemoveTrailingSlash(string href, string expectedAddress)
+		{
+			// Arrange
+			_anchors.Add(new Anchor { Href = href });
+
+			// Act
+			var results = await _subject.FindLinksOnSameDomain(_address);
+
+			// Assert
+			Assert.That(results.Single().AbsoluteUri, Is.EqualTo(expectedAddress));
+		}
+
+		[Test]
 		[TestCase("http://localhost/foo", "http://localhost/foo")]
 		[TestCase("http://localhost/foo/bar", "http://localhost/foo/bar")]
 		[TestCase("HTTP://LOCALHOST/foo/bar", "http://localhost/foo/bar")]
@@ -187,6 +203,7 @@ namespace Monzo.Crawler.Business.Tests
 		[Test]
 		[TestCase("foo", "foo?asd=123", "http://localhost/foo")]
 		[TestCase("http://localhost/foo", "foo?asd=123", "http://localhost/foo")]
+		[TestCase("http://localhost/foo", "http://localhost/foo/", "http://localhost/foo")]
 		[TestCase("http://localhost/foo", "http://localhost/foo", "http://localhost/foo")]
 		[TestCase("http://localhost/foo/bar", "foo/bar?asd=123#asd", "http://localhost/foo/bar")]
 		public async Task WhenMultipleAnchorsReturnSameValue_ShouldReturnSingleAddresses(string href1, string href2, string expectedAddress)

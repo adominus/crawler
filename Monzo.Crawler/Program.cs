@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Hosting;
 using Monzo.Crawler.Business;
 using Monzo.Crawler.Domain;
+using Polly;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -32,6 +33,8 @@ namespace Monzo.Crawler
             services.AddTransient<CrawlerService>();
 
             services.AddScoped<ISitemapGenerator, SitemapGenerator>();
+            services.AddScoped<ISitemapWriter, SitemapWriter>();
+            services.AddSingleton<ITextWriter, ConsoleWriter>();
 
             services.AddScoped<ILinkCrawler, LinkCrawler>();
             services.AddScoped<IHtmlParser, HtmlParser>();
@@ -39,7 +42,10 @@ namespace Monzo.Crawler
             services.AddTransient<PoliteDelegatingHandler>();
             services.AddTransient<IHttpClientService, HttpClientService>();
             services.AddHttpClient<IHttpClientService, HttpClientService>()
-                .AddHttpMessageHandler<PoliteDelegatingHandler>();
+                .AddHttpMessageHandler<PoliteDelegatingHandler>()
+                .AddPolicyHandler(Policy.BulkheadAsync<HttpResponseMessage>(
+                    maxParallelization: 100,
+                    maxQueuingActions: int.MaxValue));
         }
     }
 
@@ -49,9 +55,11 @@ namespace Monzo.Crawler
             HttpRequestMessage request,
             CancellationToken cancellationToken)
         {
-            await Task.Delay(300);
+            var result = await base.SendAsync(request, cancellationToken);
 
-            return await base.SendAsync(request, cancellationToken);
+            await Task.Delay(1000);
+
+            return result;
         }
     }
 }

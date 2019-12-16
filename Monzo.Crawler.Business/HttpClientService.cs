@@ -22,6 +22,7 @@ namespace Monzo.Crawler.Business
 		{
 			try
 			{
+				_logger.LogDebug($"{DateTime.Now.ToLongTimeString()} Making a request to {uri.AbsoluteUri}");
 				var response = await _httpClient.GetAsync(uri);
 
 				if (response.IsSuccessStatusCode &&

@@ -26,7 +26,7 @@ namespace Monzo.Crawler.Business
 			{
 				return
 					GetLinkedAddresses(address, body)
-						.Select(RemoveQueryStringAndFragment)
+						.Select(SanitizeAddress)
 						.Distinct()
 						.ToList();
 			}
@@ -48,7 +48,7 @@ namespace Monzo.Crawler.Business
 			}
 		}
 
-		private Uri RemoveQueryStringAndFragment(Uri uri)
-			=> new Uri(uri, uri.LocalPath);
+		private Uri SanitizeAddress(Uri uri)
+			=> new Uri(uri, uri.LocalPath.TrimEnd('/'));
 	}
 }
