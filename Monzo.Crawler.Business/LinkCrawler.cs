@@ -31,12 +31,12 @@ namespace Monzo.Crawler.Business
 						.ToList();
 			}
 
-			return new Uri[0];
+			return Enumerable.Empty<Uri>();
 		}
 
 		private IEnumerable<Uri> GetLinkedAddresses(Uri baseUri, string html)
 		{
-			foreach (var href in _htmlParser.GetAnchors(html)?.Select(x => x.Href) ?? new string[0])
+			foreach (var href in _htmlParser.GetAnchors(html)?.Select(x => x.Href) ?? Enumerable.Empty<string>())
 			{
 				if (Uri.TryCreate(baseUri, href, out Uri linkedUri))
 				{

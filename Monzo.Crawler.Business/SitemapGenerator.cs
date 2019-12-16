@@ -57,7 +57,10 @@ namespace Monzo.Crawler.Business
 				newValue: page,
 				comparisonValue: null);
 
-			await Task.WhenAll(links?.Select(link => TryCrawl(link)) ?? new Task[0]);
+			if (links?.Any() == true)
+			{
+				await Task.WhenAll(links.Select(link => TryCrawl(link)));
+			}
 		}
 	}
 }
