@@ -4,10 +4,10 @@ using Monzo.Crawler.Business.HtmlUtilties;
 using Monzo.Crawler.Business.HttpClientServices;
 using Monzo.Crawler.Business.Sitemap;
 using Monzo.Crawler.Configuration;
-using Monzo.Crawler.DelegatingHandlers;
 using Monzo.Crawler.Domain;
 using Monzo.Crawler.Domain.Sitemap;
 using Polly;
+using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -43,10 +43,10 @@ namespace Monzo.Crawler
             services.AddScoped<ILinkCrawler, LinkCrawler>();
             services.AddScoped<IHtmlParser, HtmlParser>();
 
-            services.AddTransient<PoliteDelegatingHandler>();
             services.AddTransient<IHttpClientService, HttpClientService>();
             services.AddHttpClient<IHttpClientService, HttpClientService>()
-                .AddHttpMessageHandler<PoliteDelegatingHandler>()
+                .AddTransientHttpErrorPolicy(builder =>
+                    builder.WaitAndRetryAsync(5, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))))
                 .AddPolicyHandler(Policy.BulkheadAsync<HttpResponseMessage>(
                     maxParallelization: 10,
                     maxQueuingActions: int.MaxValue));
