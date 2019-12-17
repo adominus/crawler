@@ -1,5 +1,8 @@
 ﻿using AutoFixture;
 using AutoFixture.AutoMoq;
+using Monzo.Crawler.Business.HtmlUtilties;
+using Monzo.Crawler.Business.HttpClientServices;
+using Monzo.Crawler.Business.Sitemap;
 using Moq;
 using NUnit.Framework;
 using System;
@@ -7,7 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Monzo.Crawler.Business.Tests
+namespace Monzo.Crawler.Business.Tests.Sitemap
 {
 	public class LinkCrawlerTests
 	{
@@ -19,7 +22,7 @@ namespace Monzo.Crawler.Business.Tests
 
 		private Uri _address;
 		private string _body;
-		private List<Anchor> _anchors;
+		private List<AnchorModel> _anchors;
 
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
@@ -40,7 +43,7 @@ namespace Monzo.Crawler.Business.Tests
 			_httpClientServiceMock.Setup(x => x.GetHtmlBody(_address))
 				.ReturnsAsync(() => _body);
 
-			_anchors = new List<Anchor>();
+			_anchors = new List<AnchorModel>();
 			_htmlParserMock.Setup(x => x.GetAnchors(_body))
 				.Returns(() => _anchors);
 
@@ -106,7 +109,7 @@ namespace Monzo.Crawler.Business.Tests
 		public async Task WhenAnchorHrefsAreRelative_ShouldCreateFromExpectedBase(string href, string expectedAddress)
 		{
 			// Arrange
-			_anchors.Add(new Anchor { Href = href });
+			_anchors.Add(new AnchorModel { Href = href });
 
 			// Act
 			var results = await _subject.FindLinksOnSameDomain(_address);
@@ -122,7 +125,7 @@ namespace Monzo.Crawler.Business.Tests
 		public async Task ShouldRemoveTrailingSlash(string href, string expectedAddress)
 		{
 			// Arrange
-			_anchors.Add(new Anchor { Href = href });
+			_anchors.Add(new AnchorModel { Href = href });
 
 			// Act
 			var results = await _subject.FindLinksOnSameDomain(_address);
@@ -138,7 +141,7 @@ namespace Monzo.Crawler.Business.Tests
 		public async Task WhenAnchorHrefsAreAbsoluteAndMatchDomain_ShouldReturnAsUri(string href, string expectedAddress)
 		{
 			// Arrange
-			_anchors.Add(new Anchor { Href = href });
+			_anchors.Add(new AnchorModel { Href = href });
 
 			// Act
 			var results = await _subject.FindLinksOnSameDomain(_address);
@@ -153,7 +156,7 @@ namespace Monzo.Crawler.Business.Tests
 		public async Task WhenAnchorHrefsAreAbsoluteAndDoNotMatchDomain_ShouldReturnEmpty(string href)
 		{
 			// Arrange
-			_anchors.Add(new Anchor { Href = href });
+			_anchors.Add(new AnchorModel { Href = href });
 
 			// Act
 			var results = await _subject.FindLinksOnSameDomain(_address);
@@ -169,7 +172,7 @@ namespace Monzo.Crawler.Business.Tests
 		public async Task WhenAnchorHrefsHaveQueryStringsAndFragments_ShouldSanitizeToPathAndHost(string href, string expectedAddress)
 		{
 			// Arrange
-			_anchors.Add(new Anchor { Href = href });
+			_anchors.Add(new AnchorModel { Href = href });
 
 			// Act
 			var results = await _subject.FindLinksOnSameDomain(_address);
@@ -186,9 +189,9 @@ namespace Monzo.Crawler.Business.Tests
 			var address2 = new Uri(_address, _fixture.Create<string>());
 			var address3 = new Uri(_address, _fixture.Create<string>());
 
-			_anchors.Add(new Anchor { Href = address1.AbsoluteUri });
-			_anchors.Add(new Anchor { Href = address2.AbsoluteUri });
-			_anchors.Add(new Anchor { Href = address3.AbsoluteUri });
+			_anchors.Add(new AnchorModel { Href = address1.AbsoluteUri });
+			_anchors.Add(new AnchorModel { Href = address2.AbsoluteUri });
+			_anchors.Add(new AnchorModel { Href = address3.AbsoluteUri });
 
 			// Act
 			var results = await _subject.FindLinksOnSameDomain(_address);
@@ -209,8 +212,8 @@ namespace Monzo.Crawler.Business.Tests
 		public async Task WhenMultipleAnchorsReturnSameValue_ShouldReturnSingleAddresses(string href1, string href2, string expectedAddress)
 		{
 			// Arrange
-			_anchors.Add(new Anchor { Href = href1 });
-			_anchors.Add(new Anchor { Href = href2 });
+			_anchors.Add(new AnchorModel { Href = href1 });
+			_anchors.Add(new AnchorModel { Href = href2 });
 
 			// Act
 			var results = await _subject.FindLinksOnSameDomain(_address);

@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Monzo.Crawler.Business.HtmlUtilties;
+using Monzo.Crawler.Business.HttpClientServices;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Monzo.Crawler.Business
+namespace Monzo.Crawler.Business.Sitemap
 {
 	public class LinkCrawler : ILinkCrawler
 	{

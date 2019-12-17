@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Monzo.Crawler.Domain
+namespace Monzo.Crawler.Domain.Sitemap
 {
 	public interface ISitemapGenerator
 	{
-		Task<IEnumerable<Page>> GenerateAsync(string website);
+		Task<IEnumerable<PageModel>> GenerateAsync(string website);
 	}
 }

@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Monzo.Crawler.Business
+namespace Monzo.Crawler.Business.HtmlUtilties
 {
 	public class HtmlParser : IHtmlParser
 	{
-		public IEnumerable<Anchor> GetAnchors(string html)
+		public IEnumerable<AnchorModel> GetAnchors(string html)
 		{
 			if (string.IsNullOrWhiteSpace(html))
 			{
@@ -20,13 +20,13 @@ namespace Monzo.Crawler.Business
 
 			if (anchorTags == null)
 			{
-				return Enumerable.Empty<Anchor>();
+				return Enumerable.Empty<AnchorModel>();
 			}
 
 			return anchorTags
 				.Select(x => x.GetAttributeValue("href", null))
 				.Where(x => !string.IsNullOrWhiteSpace(x))
-				.Select(x => new Anchor
+				.Select(x => new AnchorModel
 				{
 					Href = x
 				});

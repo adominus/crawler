@@ -1,10 +1,14 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Monzo.Crawler.Business;
+using Monzo.Crawler.Business.HtmlUtilties;
+using Monzo.Crawler.Business.HttpClientServices;
+using Monzo.Crawler.Business.Sitemap;
+using Monzo.Crawler.Configuration;
+using Monzo.Crawler.DelegatingHandlers;
 using Monzo.Crawler.Domain;
+using Monzo.Crawler.Domain.Sitemap;
 using Polly;
 using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Monzo.Crawler
@@ -44,22 +48,8 @@ namespace Monzo.Crawler
             services.AddHttpClient<IHttpClientService, HttpClientService>()
                 .AddHttpMessageHandler<PoliteDelegatingHandler>()
                 .AddPolicyHandler(Policy.BulkheadAsync<HttpResponseMessage>(
-                    maxParallelization: 100,
+                    maxParallelization: 10,
                     maxQueuingActions: int.MaxValue));
-        }
-    }
-
-    public class PoliteDelegatingHandler : DelegatingHandler
-    {
-        protected override async Task<HttpResponseMessage> SendAsync(
-            HttpRequestMessage request,
-            CancellationToken cancellationToken)
-        {
-            var result = await base.SendAsync(request, cancellationToken);
-
-            await Task.Delay(1000);
-
-            return result;
         }
     }
 }

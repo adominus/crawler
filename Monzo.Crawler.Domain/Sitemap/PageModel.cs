@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Monzo.Crawler.Domain
+namespace Monzo.Crawler.Domain.Sitemap
 {
-	public class Page
+	public class PageModel
 	{
 		public Uri Address { get; set; }
 

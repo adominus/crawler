@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace Monzo.Crawler.Business
+namespace Monzo.Crawler.Business.HttpClientServices
 {
 	public interface IHttpClientService
 	{

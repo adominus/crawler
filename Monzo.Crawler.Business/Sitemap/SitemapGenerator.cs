@@ -1,31 +1,31 @@
-﻿using Monzo.Crawler.Domain;
+﻿using Monzo.Crawler.Domain.Sitemap;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Monzo.Crawler.Business
+namespace Monzo.Crawler.Business.Sitemap
 {
 	public class SitemapGenerator : ISitemapGenerator
 	{
 		private readonly ILinkCrawler _linkCrawler;
 
-		private ConcurrentDictionary<string, Page> _sitemap;
+		private ConcurrentDictionary<string, PageModel> _sitemap;
 
 		public SitemapGenerator(ILinkCrawler linkCrawler)
 		{
 			_linkCrawler = linkCrawler;
 		}
 
-		public async Task<IEnumerable<Page>> GenerateAsync(string website)
+		public async Task<IEnumerable<PageModel>> GenerateAsync(string website)
 		{
 			if (!Uri.TryCreate(website, UriKind.Absolute, out Uri websiteUri))
 			{
 				throw new ArgumentException(nameof(website));
 			}
 
-			_sitemap = new ConcurrentDictionary<string, Page>();
+			_sitemap = new ConcurrentDictionary<string, PageModel>();
 
 			await TryCrawl(websiteUri);
 
@@ -46,7 +46,7 @@ namespace Monzo.Crawler.Business
 		{
 			var links = await _linkCrawler.FindLinksOnSameDomain(uri);
 
-			var page = new Page
+			var page = new PageModel
 			{
 				Address = uri,
 				LinkedAddresses = links

@@ -1,10 +1,12 @@
 ﻿using AutoFixture;
+using Monzo.Crawler.Business.Sitemap;
 using Monzo.Crawler.Domain;
+using Monzo.Crawler.Domain.Sitemap;
 using NUnit.Framework;
 using System;
 using System.Text;
 
-namespace Monzo.Crawler.Business.Tests
+namespace Monzo.Crawler.Business.Tests.Sitemap
 {
 	public class SitemapWriterTests
 	{
@@ -38,7 +40,7 @@ namespace Monzo.Crawler.Business.Tests
 		public void ShouldOutputPageAndLinks()
 		{
 			// Arrange 
-			var page = new Page
+			var page = new PageModel
 			{
 				Address = new Uri("http://localhost/"),
 				LinkedAddresses = new[] { new Uri("http://localhost/foo") }
@@ -60,7 +62,7 @@ namespace Monzo.Crawler.Business.Tests
 		public void ShouldOrderMultipleLinks()
 		{
 			// Arrange 
-			var page = new Page
+			var page = new PageModel
 			{
 				Address = new Uri("http://localhost/"),
 				LinkedAddresses = new[]
@@ -91,7 +93,7 @@ namespace Monzo.Crawler.Business.Tests
 		public void WhenNoLinks_ShouldWriteNoLinks()
 		{
 			// Arrange 
-			var page = new Page { Address = new Uri("http://localhost/foo") };
+			var page = new PageModel { Address = new Uri("http://localhost/foo") };
 
 			// Act
 			_subject.Write(new[] { page });
@@ -108,8 +110,8 @@ namespace Monzo.Crawler.Business.Tests
 		public void When2Pages_ShouldOrderByAddress()
 		{
 			// Arrange 
-			var page1 = new Page { Address = new Uri("http://localhost/foo") };
-			var page2 = new Page { Address = new Uri("http://localhost/bar") };
+			var page1 = new PageModel { Address = new Uri("http://localhost/foo") };
+			var page2 = new PageModel { Address = new Uri("http://localhost/bar") };
 
 			// Act
 			_subject.Write(new[] { page1, page2 });
@@ -128,8 +130,8 @@ http://localhost/foo
 		public void WhenAddressIsNull_ShouldSkipPage()
 		{
 			// Arrange 
-			var page1 = new Page();
-			var page2 = new Page { Address = new Uri("http://localhost/") };
+			var page1 = new PageModel();
+			var page2 = new PageModel { Address = new Uri("http://localhost/") };
 
 			// Act
 			_subject.Write(new[] { page1, page2 });

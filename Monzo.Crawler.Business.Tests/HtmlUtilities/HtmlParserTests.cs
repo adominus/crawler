@@ -1,8 +1,9 @@
 ﻿using AutoFixture;
+using Monzo.Crawler.Business.HtmlUtilties;
 using NUnit.Framework;
 using System.Linq;
 
-namespace Monzo.Crawler.Business.Tests
+namespace Monzo.Crawler.Business.Tests.HtmlUtilities
 {
 	public class HtmlParserTests
 	{

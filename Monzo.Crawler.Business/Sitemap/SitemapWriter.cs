@@ -1,9 +1,9 @@
 ﻿using Monzo.Crawler.Domain;
-using System;
+using Monzo.Crawler.Domain.Sitemap;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Monzo.Crawler.Business
+namespace Monzo.Crawler.Business.Sitemap
 {
 	public class SitemapWriter : ISitemapWriter
 	{
@@ -14,7 +14,7 @@ namespace Monzo.Crawler.Business
 			_textWriter = textWriter;
 		}
 
-		public void Write(IEnumerable<Page> pages)
+		public void Write(IEnumerable<PageModel> pages)
 		{
 			foreach (var page in pages
 				.Where(x => x.Address != null)
@@ -36,7 +36,6 @@ namespace Monzo.Crawler.Business
 					{
 						_textWriter.WriteLine($"	- {linkedAddress.AbsoluteUri}");
 					}
-
 				}
 			}
 		}

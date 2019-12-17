@@ -3,7 +3,7 @@ using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace Monzo.Crawler.Business
+namespace Monzo.Crawler.Business.HttpClientServices
 {
 	public class HttpClientService : IHttpClientService
 	{
@@ -22,7 +22,6 @@ namespace Monzo.Crawler.Business
 		{
 			try
 			{
-				_logger.LogDebug($"{DateTime.Now.ToLongTimeString()} Making a request to {uri.AbsoluteUri}");
 				var response = await _httpClient.GetAsync(uri);
 
 				if (response.IsSuccessStatusCode &&

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
-using Monzo.Crawler.Domain;
+using Monzo.Crawler.Configuration;
+using Monzo.Crawler.Domain.Sitemap;
 using System;
 using System.Threading.Tasks;
 

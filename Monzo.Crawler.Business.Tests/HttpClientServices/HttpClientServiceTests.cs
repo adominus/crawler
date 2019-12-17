@@ -1,5 +1,6 @@
 ﻿using AutoFixture;
 using AutoFixture.AutoMoq;
+using Monzo.Crawler.Business.HttpClientServices;
 using NUnit.Framework;
 using RichardSzalay.MockHttp;
 using System;
@@ -7,7 +8,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace Monzo.Crawler.Business.Tests
+namespace Monzo.Crawler.Business.Tests.HttpClientServices
 {
 	public class HttpClientServiceTests
 	{
